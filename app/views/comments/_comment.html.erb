@@ -1,0 +1,27 @@
+<turbo-frame id="comment_<%= comment.id %>" class="border-bottom py-3 d-block">
+  <div class="d-flex justify-content-between align-items-start mb-2">
+    <strong><%= comment.user.username %></strong>
+    <small class="text-muted"><%= comment.created_at.strftime("%d.%m.%Y %H:%M") %></small>
+  </div>
+
+  <div class="mb-3">
+    <%= simple_format comment.comment %>
+  </div>
+
+  <% if current_user && current_user == comment.user %>
+    <div class="small mb-2 d-flex gap-2">
+      <%= link_to "Edytuj",
+                  edit_comment_frame_recipe_path(comment.recipe, comment_id: comment.id),
+                  data: { turbo_frame: "comment_#{comment.id}", turbo_prefetch: false },
+                  class: "btn btn-sm fw-semibold text-white",
+                  style: "background: linear-gradient(135deg, #28a745, #85e085); border: none;" %>
+
+      <%= button_to "Usuń",
+                    destroy_comment_recipe_path(comment.recipe, comment_id: comment.id),
+                    method: :delete,
+                    data: { turbo_confirm: "Na pewno chcesz usunąć ten komentarz?" },
+                    class: "btn btn-sm fw-semibold text-white",
+                    style: "background: linear-gradient(135deg, #dc3545, #ff6b6b); border: none;" %>
+    </div>
+  <% end %>
+</turbo-frame>

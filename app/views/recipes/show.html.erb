@@ -1,0 +1,126 @@
+<body class="bg-light" style="background-image: url('<%= asset_path('jedzenie.jpg') %>'); background-size: cover; background-position: center; background-attachment: fixed;">
+<div class="container py-5">
+
+  <div class="card shadow-sm border-0">
+
+    <div class="text-center p-4 rounded-top" style="background: linear-gradient(135deg, #28a745, #85e085);">
+      <h1 class="h3 text-white m-0"><%= @recipe.title %></h1>
+    </div>
+
+    <div class="card-body">
+
+      <div class="mb-4 text-center">
+        <% if @recipe.image.attached? %>
+          <%= image_tag @recipe.image,
+                        class: "card-img-top img-fluid",
+                        style: "max-height: 600px; object-fit: cover;" %>
+        <% else %>
+          <div class="bg-light text-muted d-flex align-items-center justify-content-center"
+               style="height:600px;">
+            Brak zdjęcia
+          </div>
+        <% end %>
+      </div>
+
+      <div class="text-center text-muted mb-4">
+        <span class="me-3"><strong>Kategoria:</strong> <%= @recipe.category&.name || "brak" %></span>
+        <span class="me-3"><strong>Autor:</strong> <%= @recipe.user.username %></span>
+        <span class="me-3"><strong>Czas:</strong> <%= @recipe.preparation_time %> min</span>
+        <span><strong>Dodano:</strong> <%= @recipe.created_at.strftime("%d.%m.%Y") %></span>
+      </div>
+
+      <h5 class="text-center">Składniki</h5>
+      <div class="bg-light rounded p-3 mb-4">
+        <%= simple_format @recipe.ingredients %>
+      </div>
+
+      <h5 class="text-center">Przygotowanie</h5>
+      <div class="bg-light rounded p-3 mb-4">
+        <%= simple_format @recipe.description %>
+      </div>
+
+      <div class="text-center mb-5">
+        <div id="recipe_ratings" class="text-center">
+
+          <h5 class="mb-3">Oceny</h5>
+
+          <% if @recipe.ratings.any? %>
+            <div class="d-flex justify-content-center align-items-center gap-3 mb-4">
+              <div class="fs-4 fw-bold text-warning">
+                <%= @recipe.average_rating %>
+              </div>
+              <div class="text-muted">
+                (<%= count = @recipe.ratings.count %>
+
+                <%= case count
+                    when 0 then "ocen"
+                    when 1 then "ocena"
+                    when 2..4 then "oceny"
+                    else "ocen"
+                    end %>)
+              </div>
+            </div>
+          <% else %>
+            <p class="text-muted mb-4">Ten przepis nie ma jeszcze ocen.</p>
+          <% end %>
+
+          <% if logged_in? %>
+            <% if @recipe.user == current_user %>
+            <% else %>
+              <% user_rating = @recipe.ratings.find_by(user: current_user) %>
+
+              <%= form_with model: [@recipe, (user_rating || Rating.new)],
+                            url: rate_recipe_path(@recipe),
+                            method: :post,
+                            data: { turbo_frame: "recipe_ratings" },
+                            html: { class: "d-inline-block" } do |f| %>
+
+                <div class="d-flex justify-content-center align-items-center gap-3">
+                  <label class="form-label mb-0">Twoja ocena:</label>
+
+                  <%= f.select :rating,
+                               options_for_select((1..5).to_a.reverse, selected: user_rating&.rating),
+                               { prompt: false },
+                               class: "form-select w-auto" %>
+
+                  <%= f.submit user_rating ? "Zmień ocenę" : "Oceń",
+                               class: "btn btn-warning btn-sm text-white" %>
+                </div>
+              <% end %>
+            <% end %>
+          <% else %>
+            <p class="text-muted small">
+              <%= link_to "Zaloguj się", login_path, class: "fw-bold", style: "color:#71d88c;" %>
+              aby ocenić przepis
+            </p>
+          <% end %>
+        </div>
+      </div>
+
+      <div id="comments_container">
+        <%= render @comments %>
+      </div>
+
+      <% unless @comments.any? %>
+        <p id="no_comments_message"
+           class="text-muted text-center py-3">
+          Brak komentarzy
+        </p>
+      <% end %>
+
+      <% if logged_in? %>
+        <turbo-frame id="new_comment_form" class="mt-4">
+          <%= render "comments/form",
+                     recipe: @recipe,
+                     comment: @comment %>
+        </turbo-frame>
+      <% else %>
+        <p class="text-muted mt-3 text-center">
+          <%= link_to "Zaloguj się", login_path,
+                      class: "fw-bold", style: "color:#71d88c;" %>
+          aby dodać komentarz
+        </p>
+      <% end %>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,58 @@
+<body class="bg-light" style="background-image: url('<%= asset_path('jedzenie.jpg') %>'); background-size: cover; background-position: center; background-attachment: fixed;">
+<div class="container py-5 text-center">
+
+  <h1 class="display-4 mb-3 text-white fw-bold">Witaj w Kuchni!</h1>
+
+  <% if logged_in? %>
+    <p class="lead text-white fw-bold">
+      Miłego gotowania!
+    </p>
+
+    <%= link_to new_recipe_path, class: "btn btn-lg mb-5 text-white", style: "background: linear-gradient(45deg, #28a745, #85e085);" do %>
+      Dodaj swój przepis
+    <% end %>
+  <% else %>
+    <p class="lead text-white fw-bold">
+      Miłego gotowania!
+    </p>
+    <p class="lead text-white fw-bold">
+      Zaloguj się lub zarejestruj, żeby dodać swój przepis
+    </p>
+  <% end %>
+</div>
+
+<div class="row justify-content-center mb-5">
+  <div class="col-12 col-md-8 col-lg-6">
+    <%= form_with url: recipes_path, method: :get, local: true do |f| %>
+      <div class="input-group input-group-lg shadow-sm">
+        <%= f.text_field :query,
+                         placeholder: "Szukaj przepisu...",
+                         class: "form-control",
+                         value: params[:query] %>
+
+        <button class="btn btn-light border" type="submit">
+          <i class="bi bi-search"></i>
+        </button>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<h2 class="text-center my-5 text-white">Kategorie przepisów</h2>
+
+<div class="container">
+  <div class="row g-4 justify-content-center">
+
+    <% Category.order(:name).each do |cat| %>
+      <div class="col-12 col-sm-6 col-md-4 col-lg-3 d-flex">
+        <a href="<%= category_recipes_path(cat.slug) %>" class="text-decoration-none w-100">
+          <div class="card shadow-sm border-0 h-100 hover-shadow rounded-3">
+            <div class="card-header text-center text-white py-5 rounded-3" style="background: linear-gradient(135deg, #28a745, #85e085);">
+              <h5 class="mb-0 fs-4"><%= cat.name %></h5>
+            </div>
+          </div>
+        </a>
+      </div>
+    <% end %>
+  </div>
+</div>

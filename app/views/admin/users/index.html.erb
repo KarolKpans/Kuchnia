@@ -1,0 +1,52 @@
+<body class="bg-light" style="background-image: url('<%= asset_path('jedzenie.jpg') %>'); background-size: cover; background-position: center; background-attachment: fixed;">
+
+<div class="container py-5">
+  <h1 class="text-center mb-5 text-white">Panel Admina – Użytkownicy</h1>
+
+  <% if @users.any? %>
+    <div class="row g-4 justify-content-center">
+      <% @users.each do |user| %>
+        <div class="col-12 col-md-6 col-lg-4">
+          <div class="card h-100 shadow-sm border-0 bg-white rounded-3 transition hover-shadow">
+            <div class="card-body d-flex flex-column p-4">
+
+              <div class="d-flex justify-content-between align-items-start mb-3">
+                <h5 class="card-title mb-0"><%= user.username %></h5>
+                <span class="badge <%= user.role == 1 ? 'bg-success' : 'bg-secondary' %> fs-6 px-3 py-2">
+                  <%= user.role == 1 ? "Admin" : "Użytkownik" %>
+                </span>
+              </div>
+
+              <div class="text-muted mb-2">
+                <i class="bi  me-2"></i>
+                <%= user.email.presence || "Brak emaila" %>
+              </div>
+
+              <div class="text-muted small mb-4">
+                <i class="bi  me-2"></i>
+                Dołączył: <%= user.created_at.strftime("%d.%m.%Y") %>
+              </div>
+
+              <div class="mt-auto">
+                <% if user == current_user %>
+                  <span class="text-muted fst-italic small">
+                    Nie możesz się usunąć
+                  </span>
+                <% else %>
+                  <%= button_to "Usuń użytkownika",
+                                admin_user_path(user),
+                                method: :delete,
+                                data: { turbo_confirm: "Na pewno chcesz usunąć #{user.username}?" },
+                                class: "btn btn-sm fw-semibold text-white w-100",
+                                style: "background: linear-gradient(135deg, #dc3545, #ff6b6b); border: none;" %>
+                <% end %>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</div>
+</body>
