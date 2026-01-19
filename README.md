@@ -5,6 +5,10 @@ application up and running.
 
 Things you may want to cover:
 
+Po migracji bazy trzeba jeszcze wykonać seed który wgra do bazy 7 kategori i 1 użytkownika admin
+Login: admin 
+Hasło: adminadmin
+
 * Ruby version
 
 * System dependencies
